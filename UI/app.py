@@ -44,6 +44,10 @@ def hiragana_classifier_app():
                     're', 'ri', 'ro', 'ru', 'sa', 'se', 'shi', 'so', 'su',
                     'ta', 'te', 'tsu', 'to', 'uu', 'wa', 'wo', 'ya', 'yo', 'yu']
 
+    # Inicializar letra objetivo en session state
+    if "objective_letter_cnn" not in st.session_state:
+        st.session_state.objective_letter_cnn = np.random.choice(class_labels)
+
     # Cargar modelo (usar caché para no recargarlo cada vez)
     @st.cache_resource
     def load_model():
@@ -63,6 +67,15 @@ def hiragana_classifier_app():
         return
 
     st.success("Modelo cargado exitosamente")
+
+    # Mostrar letra objetivo
+    objective_letter = st.session_state.objective_letter_cnn
+    objective_hiragana = HIRAGANA_MAP.get(objective_letter, '')
+    st.info(f"🎯 **Letra a dibujar: {objective_letter} ({objective_hiragana})**")
+
+    if st.button("🔄 Cambiar letra", key="change_letter_cnn"):
+        st.session_state.objective_letter_cnn = np.random.choice(class_labels)
+        st.rerun()
 
     # Configuración del canvas
     st.sidebar.header("Configuración del Canvas")
@@ -136,6 +149,26 @@ def hiragana_classifier_app():
                         st.success(f"**Predicción: {predicted_class} ({hiragana_char})**")
                         st.metric("Confianza", f"{confidence:.2f}%")
 
+                        # Calcular puntuación basada en el top 10
+                        points = 0
+                        for i, idx in enumerate(top_indices, 1):
+                            if class_labels[idx] == objective_letter:
+                                points = 10 - i + 1
+                                break
+
+                        # Mostrar puntuación
+                        if points > 0:
+                            if points == 10:
+                                st.success(f"🎉 **Puntuación: {points}/10** - ¡Perfecto!")
+                            elif points >= 7:
+                                st.success(f"✅ **Puntuación: {points}/10** - ¡Muy bien!")
+                            elif points >= 4:
+                                st.warning(f"⚠️ **Puntuación: {points}/10** - Puedes mejorar")
+                            else:
+                                st.error(f"❌ **Puntuación: {points}/10** - Intenta de nuevo")
+                        else:
+                            st.error(f"❌ **Puntuación: 0/10** - La letra objetivo no está en el Top 10")
+
                         # Mostrar imagen procesada
                         st.image(img_resized, caption="Imagen procesada (64x64)", width=150)
 
@@ -184,6 +217,10 @@ def hiragana_transfer_learning_app():
                     're', 'ri', 'ro', 'ru', 'sa', 'se', 'shi', 'so', 'su',
                     'ta', 'te', 'tsu', 'to', 'uu', 'wa', 'wo', 'ya', 'yo', 'yu']
 
+    # Inicializar letra objetivo en session state
+    if "objective_letter_tl" not in st.session_state:
+        st.session_state.objective_letter_tl = np.random.choice(class_labels)
+
     # Cargar modelo (usar caché para no recargarlo cada vez)
     @st.cache_resource
     def load_transfer_model():
@@ -203,6 +240,15 @@ def hiragana_transfer_learning_app():
         return
 
     st.success("Modelo Transfer Learning cargado exitosamente")
+
+    # Mostrar letra objetivo
+    objective_letter = st.session_state.objective_letter_tl
+    objective_hiragana = HIRAGANA_MAP.get(objective_letter, '')
+    st.info(f"🎯 **Letra a dibujar: {objective_letter} ({objective_hiragana})**")
+
+    if st.button("🔄 Cambiar letra", key="change_letter_tl"):
+        st.session_state.objective_letter_tl = np.random.choice(class_labels)
+        st.rerun()
 
     # Configuración del canvas
     st.sidebar.header("Configuración del Canvas")
@@ -278,6 +324,26 @@ def hiragana_transfer_learning_app():
 
                         st.success(f"**Predicción: {predicted_class} ({hiragana_char})**")
                         st.metric("Confianza", f"{confidence:.2f}%")
+
+                        # Calcular puntuación basada en el top 10
+                        points = 0
+                        for i, idx in enumerate(top_indices, 1):
+                            if class_labels[idx] == objective_letter:
+                                points = 10 - i + 1
+                                break
+
+                        # Mostrar puntuación
+                        if points > 0:
+                            if points == 10:
+                                st.success(f"🎉 **Puntuación: {points}/10** - ¡Perfecto!")
+                            elif points >= 7:
+                                st.success(f"✅ **Puntuación: {points}/10** - ¡Muy bien!")
+                            elif points >= 4:
+                                st.warning(f"⚠️ **Puntuación: {points}/10** - Puedes mejorar")
+                            else:
+                                st.error(f"❌ **Puntuación: {points}/10** - Intenta de nuevo")
+                        else:
+                            st.error(f"❌ **Puntuación: 0/10** - La letra objetivo no está en el Top 10")
 
                         # Mostrar imagen procesada
                         st.image(img_resized, caption="Imagen procesada (128x128 RGB)", width=150)
