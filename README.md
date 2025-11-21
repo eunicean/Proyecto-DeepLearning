@@ -7,6 +7,11 @@
 
 Esta aplicación de Streamlit permite dibujar caracteres hiragana en un canvas y obtener predicciones en tiempo real usando modelos de Deep Learning.
 
+## Ejecución
+```
+   py -m streamlit run UI/app.py
+```
+
 ## Modelos Disponibles
 
 La aplicación incluye dos modelos diferentes:
@@ -84,4 +89,4 @@ Ambos modelos pueden reconocer los siguientes 46 caracteres hiragana:
 # Integrantes
 - Ricardo Chuy, 221007
 - Eunice Mata, 21231
-- Jo
+- Andre Jo, 22199
